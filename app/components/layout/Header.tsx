@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import {
   ShoppingCartIcon,
@@ -18,6 +18,8 @@ const Header = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userName, setUserName] = useState("");
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const user = tokenService.getUser();
@@ -25,10 +27,29 @@ const Header = () => {
       setIsLoggedIn(true);
       setUserName(user.name);
     }
+
+    // Thêm event listener để đóng dropdown khi click ra ngoài
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
+        setIsDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
   }, []);
 
   const handleLogout = () => {
     authApi.logout();
+  };
+
+  const toggleDropdown = () => {
+    setIsDropdownOpen(!isDropdownOpen);
   };
 
   return (
@@ -83,34 +104,44 @@ const Header = () => {
           {/* Actions */}
           <div className="hidden lg:flex items-center gap-6">
             {isLoggedIn ? (
-              <div className="relative group">
-                <button className="flex items-center gap-2">
+              <div className="relative" ref={dropdownRef}>
+                <button
+                  className="flex items-center gap-2"
+                  onClick={toggleDropdown}
+                >
                   <UserIcon className="h-6 w-6" />
                   <div>
                     <p className="text-sm">{userName}</p>
                     <p className="text-xs">Tài khoản</p>
                   </div>
                 </button>
-                <div className="absolute right-0 top-full mt-2 w-48 bg-white rounded-md shadow-lg py-1 hidden group-hover:block z-50">
-                  <Link
-                    href="/account/profile"
-                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                  >
-                    Thông tin tài khoản
-                  </Link>
-                  <Link
-                    href="/account/orders"
-                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                  >
-                    Đơn hàng của tôi
-                  </Link>
-                  <button
-                    onClick={handleLogout}
-                    className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                  >
-                    Đăng xuất
-                  </button>
-                </div>
+                {isDropdownOpen && (
+                  <div className="absolute right-0 top-full mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50">
+                    <Link
+                      href="/account/profile"
+                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      onClick={() => setIsDropdownOpen(false)}
+                    >
+                      Thông tin tài khoản
+                    </Link>
+                    <Link
+                      href="/account/orders"
+                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      onClick={() => setIsDropdownOpen(false)}
+                    >
+                      Đơn hàng của tôi
+                    </Link>
+                    <button
+                      onClick={() => {
+                        setIsDropdownOpen(false);
+                        handleLogout();
+                      }}
+                      className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    >
+                      Đăng xuất
+                    </button>
+                  </div>
+                )}
               </div>
             ) : (
               <Link href="/auth/login" className="flex items-center gap-2">
@@ -167,17 +198,22 @@ const Header = () => {
                   <Link
                     href="/account/profile"
                     className="block px-4 py-2 hover:bg-gray-100 rounded"
+                    onClick={() => setIsMobileMenuOpen(false)}
                   >
                     Thông tin tài khoản
                   </Link>
                   <Link
                     href="/account/orders"
                     className="block px-4 py-2 hover:bg-gray-100 rounded"
+                    onClick={() => setIsMobileMenuOpen(false)}
                   >
                     Đơn hàng của tôi
                   </Link>
                   <button
-                    onClick={handleLogout}
+                    onClick={() => {
+                      setIsMobileMenuOpen(false);
+                      handleLogout();
+                    }}
                     className="block w-full text-left px-4 py-2 hover:bg-gray-100 rounded"
                   >
                     Đăng xuất
@@ -187,6 +223,7 @@ const Header = () => {
                 <Link
                   href="/auth/login"
                   className="block px-4 py-2 hover:bg-gray-100 rounded"
+                  onClick={() => setIsMobileMenuOpen(false)}
                 >
                   Đăng nhập
                 </Link>
@@ -194,6 +231,7 @@ const Header = () => {
               <Link
                 href="/cart"
                 className="block px-4 py-2 hover:bg-gray-100 rounded"
+                onClick={() => setIsMobileMenuOpen(false)}
               >
                 Giỏ hàng
               </Link>
