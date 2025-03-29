@@ -1,36 +1,70 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Hasaki Frontend
 
-## Getting Started
+Frontend cho website bán mỹ phẩm Hasaki sử dụng Next.js 14, TypeScript và Tailwind CSS.
 
-First, run the development server:
+## Công nghệ sử dụng
+
+- Next.js 14
+- TypeScript
+- Tailwind CSS
+- Axios
+- JWT Authentication
+
+## Tính năng
+
+- Đăng nhập/Đăng ký
+- Xác thực người dùng với JWT (Access Token & Refresh Token)
+- Responsive design
+- Trang profile người dùng
+- Trang chủ hiển thị sản phẩm
+- Giỏ hàng
+
+## Cài đặt
+
+1. Clone repository:
+
+```bash
+git clone https://github.com/TuanVASE140819/hasaki_fe.git
+```
+
+2. Cài đặt dependencies:
+
+```bash
+npm install
+```
+
+3. Tạo file .env.local và thêm các biến môi trường:
+
+```
+NEXT_PUBLIC_API_URL=http://localhost:3000/api
+```
+
+4. Chạy development server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Cấu trúc thư mục
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```
+├── app/
+│   ├── components/     # React components
+│   ├── services/       # API services
+│   ├── types/         # TypeScript types
+│   └── ...
+├── public/            # Static files
+└── ...
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## API Endpoints
 
-## Learn More
+- POST /auth/register - Đăng ký tài khoản mới
+- POST /auth/login - Đăng nhập
+- POST /auth/refresh-token - Làm mới access token
+- POST /auth/logout - Đăng xuất
+- GET /auth/profile - Lấy thông tin người dùng
 
-To learn more about Next.js, take a look at the following resources:
+## Contributing
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Mọi đóng góp đều được chào đón. Vui lòng tạo issue hoặc pull request.
