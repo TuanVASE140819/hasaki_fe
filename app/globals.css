@@ -1,0 +1,47 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --primary-color: #1a6744;
+  --secondary-color: #ff6b00;
+}
+
+@layer base {
+  body {
+    background-color: rgb(249 250 251);
+  }
+}
+
+@layer components {
+  .container {
+    width: 100%;
+    max-width: 80rem;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+}
+
+/* Swiper styles */
+.swiper-button-next,
+.swiper-button-prev {
+  color: white !important;
+  opacity: 0.75;
+  transition: opacity 0.2s;
+}
+
+.swiper-button-next:hover,
+.swiper-button-prev:hover {
+  opacity: 1;
+}
+
+.swiper-pagination-bullet {
+  background: white !important;
+  opacity: 0.75;
+}
+
+.swiper-pagination-bullet-active {
+  opacity: 1;
+}
