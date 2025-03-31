@@ -1,35 +1,38 @@
-const TOKEN_KEY = {
-  ACCESS_TOKEN: "accessToken",
-  REFRESH_TOKEN: "refreshToken",
-  USER: "user",
-};
+const TOKEN_KEY = "token";
+const USER_KEY = "user";
 
 export const tokenService = {
-  getAccessToken: () => {
-    return localStorage.getItem(TOKEN_KEY.ACCESS_TOKEN);
+  getToken: () => {
+    if (typeof window !== "undefined") {
+      return localStorage.getItem(TOKEN_KEY);
+    }
+    return null;
   },
 
-  getRefreshToken: () => {
-    return localStorage.getItem(TOKEN_KEY.REFRESH_TOKEN);
+  setToken: (token: string) => {
+    if (typeof window !== "undefined") {
+      localStorage.setItem(TOKEN_KEY, token);
+    }
+  },
+
+  removeToken: () => {
+    if (typeof window !== "undefined") {
+      localStorage.removeItem(TOKEN_KEY);
+      localStorage.removeItem(USER_KEY);
+    }
   },
 
   getUser: () => {
-    const userStr = localStorage.getItem(TOKEN_KEY.USER);
-    return userStr ? JSON.parse(userStr) : null;
-  },
-
-  setTokens: (accessToken: string, refreshToken: string) => {
-    localStorage.setItem(TOKEN_KEY.ACCESS_TOKEN, accessToken);
-    localStorage.setItem(TOKEN_KEY.REFRESH_TOKEN, refreshToken);
+    if (typeof window !== "undefined") {
+      const userStr = localStorage.getItem(USER_KEY);
+      return userStr ? JSON.parse(userStr) : null;
+    }
+    return null;
   },
 
   setUser: (user: any) => {
-    localStorage.setItem(TOKEN_KEY.USER, JSON.stringify(user));
-  },
-
-  clearTokens: () => {
-    localStorage.removeItem(TOKEN_KEY.ACCESS_TOKEN);
-    localStorage.removeItem(TOKEN_KEY.REFRESH_TOKEN);
-    localStorage.removeItem(TOKEN_KEY.USER);
+    if (typeof window !== "undefined") {
+      localStorage.setItem(USER_KEY, JSON.stringify(user));
+    }
   },
 };

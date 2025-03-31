@@ -1,31 +1,27 @@
 export interface LoginRequest {
-  email: string;
+  username: string;
   password: string;
 }
 
-export interface RegisterRequest extends LoginRequest {
-  name: string;
+export interface RegisterRequest {
+  username: string;
+  password: string;
 }
 
 export interface User {
   id: string;
-  email: string;
-  name: string;
+  username: string;
   role: string;
-  avatar?: string | null;
-  customerCode?: string;
-  createdAt: {
-    _seconds: number;
-    _nanoseconds: number;
-  };
+  createdAt: string;
 }
 
 export interface AuthResponse {
   success: boolean;
   message: string;
-  accessToken: string;
-  refreshToken: string;
-  user: User;
+  data: {
+    token: string;
+    user: User;
+  };
 }
 
 export interface AuthError {
@@ -36,4 +32,10 @@ export interface AuthError {
 export interface ProfileResponse {
   success: boolean;
   user: User;
+}
+
+export interface ProfileUpdateRequest {
+  username?: string;
+  currentPassword?: string;
+  newPassword?: string;
 }

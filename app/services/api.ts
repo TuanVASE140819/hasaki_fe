@@ -5,12 +5,14 @@ import {
   LoginRequest,
   RegisterRequest,
   ProfileResponse,
+  ProfileUpdateRequest,
 } from "../types/auth";
+import { CategoryResponse } from "../types/category";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5010";
+const BASE_URL = "http://localhost:3000/api";
 
 const api = axios.create({
-  baseURL: API_URL,
+  baseURL: BASE_URL,
   headers: {
     "Content-Type": "application/json",
   },
@@ -19,7 +21,7 @@ const api = axios.create({
 // Interceptor để thêm token vào header
 api.interceptors.request.use(
   (config) => {
-    const token = tokenService.getAccessToken();
+    const token = tokenService.getToken();
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -32,66 +34,79 @@ api.interceptors.request.use(
 
 // Interceptor để refresh token
 api.interceptors.response.use(
-  (response) => response,
-  async (error) => {
-    const originalRequest = error.config;
-
-    if (error.response?.status === 401 && !originalRequest._retry) {
-      originalRequest._retry = true;
-
-      try {
-        const refreshToken = tokenService.getRefreshToken();
-        const response = await axios.post(
-          `${api.defaults.baseURL}/auth/refresh-token`,
-          {
-            refreshToken,
-          }
-        );
-
-        const { accessToken, refreshToken: newRefreshToken } = response.data;
-        tokenService.setTokens(accessToken, newRefreshToken);
-
-        originalRequest.headers.Authorization = `Bearer ${accessToken}`;
-        return api(originalRequest);
-      } catch (error) {
-        tokenService.clearTokens();
-        window.location.href = "/auth/login";
-        return Promise.reject(error);
-      }
+  (response) => {
+    return response;
+  },
+  (error) => {
+    if (error.response?.status === 401) {
+      tokenService.removeToken();
+      window.location.href = "/auth/login";
     }
-
     return Promise.reject(error);
   }
 );
 
 export const authApi = {
-  register: async (data: RegisterRequest): Promise<AuthResponse> => {
-    const response = await api.post<AuthResponse>("/auth/register", data);
+  register: async (
+    username: string,
+    password: string
+  ): Promise<AuthResponse> => {
+    const response = await api.post<AuthResponse>("/auth/register", {
+      username,
+      password,
+    });
     return response.data;
   },
 
-  login: async (data: LoginRequest): Promise<AuthResponse> => {
-    try {
-      const response = await api.post<AuthResponse>("/auth/login", data);
-      const { accessToken, refreshToken, user } = response.data;
-      tokenService.setTokens(accessToken, refreshToken);
-      tokenService.setUser(user);
-      return response.data;
-    } catch (error) {
-      console.error("Login error:", error);
-      throw error;
+  login: async (username: string, password: string): Promise<AuthResponse> => {
+    const response = await api.post<AuthResponse>("/auth/login", {
+      username,
+      password,
+    });
+    if (response.data.data.token) {
+      tokenService.setToken(response.data.data.token);
+      tokenService.setUser(response.data.data.user);
     }
+    return response.data;
   },
 
   logout: () => {
-    tokenService.clearTokens();
+    tokenService.removeToken();
     localStorage.removeItem("user");
     window.location.href = "/auth/login";
   },
 
-  getProfile: async (): Promise<ProfileResponse> => {
-    const response = await api.get<ProfileResponse>("/auth/profile");
+  getProfile: async (): Promise<AuthResponse> => {
+    const response = await api.get<AuthResponse>("/auth/profile");
     return response.data;
+  },
+
+  updateProfile: async (data: ProfileUpdateRequest): Promise<AuthResponse> => {
+    const response = await api.put<AuthResponse>("/auth/profile", data);
+    return response.data;
+  },
+};
+
+export const categoryApi = {
+  getCategories: async () => {
+    try {
+      const response = await api.get("/categories");
+      console.log("API Response:", response); // Log response
+      return response.data; // Trả về trực tiếp data từ response
+    } catch (error) {
+      console.error("API Error:", error);
+      throw error;
+    }
+  },
+
+  getCategoryById: async (id: string) => {
+    try {
+      const response = await api.get(`/categories/${id}`);
+      return response.data;
+    } catch (error) {
+      console.error("API Error:", error);
+      throw error;
+    }
   },
 };
 

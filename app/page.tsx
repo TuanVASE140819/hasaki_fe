@@ -4,6 +4,7 @@ import ProductCard from "./components/home/ProductCard";
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
+import CategoryList from "./components/category/CategoryList";
 
 const banners = [
   "https://placehold.co/1920x600/1A6744/FFFFFF/png?text=Banner+1",
@@ -106,27 +107,7 @@ export default function Home() {
       {/* Categories */}
       <section className="container py-8">
         <h2 className="text-2xl font-semibold mb-6">Danh mục sản phẩm</h2>
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-          {categories.map((category) => (
-            <Link
-              key={category.id}
-              href={`/danh-muc/${category.id}`}
-              className="group"
-            >
-              <div className="relative aspect-square rounded-lg overflow-hidden">
-                <Image
-                  src={category.image}
-                  alt={category.name}
-                  fill
-                  className="object-cover group-hover:scale-105 transition-transform duration-300"
-                />
-              </div>
-              <p className="text-center mt-2 text-sm font-medium">
-                {category.name}
-              </p>
-            </Link>
-          ))}
-        </div>
+        <CategoryList />
       </section>
 
       {/* Flash Sale */}
